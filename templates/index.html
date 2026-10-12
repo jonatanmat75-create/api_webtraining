@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Web Training Empresarial</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+
+        body{
+            background:#f4f6f9;
+        }
+
+        .navbar-custom{
+            background:#243f8f;
+        }
+
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link{
+            color:white !important;
+            font-weight:bold;
+        }
+
+        .titulo{
+            color:#243f8f;
+            font-weight:bold;
+        }
+
+        .card-dashboard{
+            border:none;
+            border-radius:12px;
+            box-shadow:0px 2px 8px rgba(0,0,0,0.15);
+            margin-bottom:20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+
+    <div class="container-fluid">
+
+        <a class="navbar-brand" href="/web">
+            Web Training
+        </a>
+
+        <div class="navbar-nav ms-auto">
+
+            <a class="nav-link" href="/web/usuarios">
+                Usuarios
+            </a>
+
+            <a class="nav-link" href="/web/cursos">
+                Cursos
+            </a>
+
+            <a class="nav-link" href="/web/empresas">
+                Empresas
+            </a>
+
+            <a class="nav-link" href="/web/roles">
+                Roles
+            </a>
+
+            <a class="nav-link" href="/web/usuarios">
+                Usuarios
+            </a>
+
+            <a class="nav-link" href="/web/cursos">
+                Cursos
+            </a>
+
+        </div>
+
+            <a class="nav-link" href="/web/empresas">
+                Empresas
+            </a>
+
+            <a class="nav-link" href="/web/roles">
+                Roles
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<div class="container mt-5">
+
+    <div class="row mb-4">
+
+        <div class="col-md-8">
+
+            <h1 class="titulo">
+                Usuarios Registrados
+            </h1>
+
+            <p class="text-muted">
+                Administración de usuarios de la plataforma Web Training Empresarial
+            </p>
+
+        </div>
+
+        <div class="col-md-4 text-end">
+
+            <button
+                class="btn btn-primary btn-lg"
+                onclick="registrarUsuario()">
+
+                Nuevo Usuario
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- DASHBOARD -->
+
+    <div class="row">
+
+        <div class="col-md-3">
+
+            <div class="card card-dashboard">
+
+                <div class="card-body text-center">
+
+                    <h5>Usuarios</h5>
+
+                    <h2 id="contadorUsuarios">0</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="card card-dashboard">
+
+                <div class="card-body text-center">
+
+                    <h5>Cursos</h5>
+
+                    <h2>1</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="card card-dashboard">
+
+                <div class="card-body text-center">
+
+                    <h5>Empresas</h5>
+
+                    <h2>1</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="card card-dashboard">
+
+                <div class="card-body text-center">
+
+                    <h5>Roles</h5>
+
+                    <h2>1</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TABLA -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <strong>
+                Gestión de Usuarios
+            </strong>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-striped table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Correo</th>
+                        <th>Acciones</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="tabla"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+cargarUsuarios();
+
+function cargarUsuarios(){
+
+    fetch("/usuarios")
+    .then(response => response.json())
+    .then(datos => {
+
+        document.getElementById(
+            "contadorUsuarios"
+        ).textContent = datos.length;
+
+        let html = "";
+
+        datos.forEach(usuario => {
+
+            html += `
+            <tr>
+
+                <td>${usuario.id_usuario}</td>
+
+                <td>${usuario.nombres}</td>
+
+                <td>${usuario.apellidos}</td>
+
+                <td>${usuario.correo}</td>
+
+                <td>
+
+                    <button
+                        class="btn btn-warning btn-sm"
+                        onclick="editarUsuario(
+                            ${usuario.id_usuario},
+                            '${usuario.nombres}',
+                            '${usuario.apellidos}',
+                            '${usuario.correo}'
+                        )">
+
+                        Editar
+
+                    </button>
+
+                    <button
+                        class="btn btn-danger btn-sm"
+                        onclick="eliminarUsuario(
+                            ${usuario.id_usuario}
+                        )">
+
+                        Eliminar
+
+                    </button>
+
+                </td>
+
+            </tr>
+            `;
+        });
+
+        document.getElementById(
+            "tabla"
+        ).innerHTML = html;
+
+    });
+}
+
+function registrarUsuario(){
+
+    let nombre = prompt("Nombre");
+    if(!nombre) return;
+
+    let apellido = prompt("Apellido");
+    if(!apellido) return;
+
+    let correo = prompt("Correo");
+    if(!correo) return;
+
+    let documento = prompt("Documento");
+    if(!documento) return;
+
+    fetch("/usuarios",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            id_empresa:1,
+            id_rol:1,
+
+            nombres:nombre,
+            apellidos:apellido,
+
+            documento:documento,
+
+            correo:correo,
+
+            contrasena:"123456",
+
+            estado:1
+
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        alert(data.mensaje);
+
+        cargarUsuarios();
+
+    });
+
+}
+
+function editarUsuario(
+    id,
+    nombreActual,
+    apellidoActual,
+    correoActual
+){
+
+    let nombre =
+        prompt("Nombre", nombreActual);
+
+    if(!nombre) return;
+
+    let apellido =
+        prompt("Apellido", apellidoActual);
+
+    if(!apellido) return;
+
+    let correo =
+        prompt("Correo", correoActual);
+
+    if(!correo) return;
+
+    fetch(`/usuarios/${id}`,{
+
+        method:"PUT",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            nombres:nombre,
+            apellidos:apellido,
+            correo:correo,
+            estado:1
+
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        alert(data.mensaje);
+
+        cargarUsuarios();
+
+    });
+
+}
+
+function eliminarUsuario(id){
+
+    if(!confirm(
+        "¿Desea eliminar este usuario?"
+    )){
+        return;
+    }
+
+    fetch(`/usuarios/${id}`,{
+
+        method:"DELETE"
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        alert(data.mensaje);
+
+        cargarUsuarios();
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
